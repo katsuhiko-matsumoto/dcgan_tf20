@@ -14,6 +14,7 @@ import imageio
 import logging
 import datetime
 import sys
+import argparse
 
 #orig libs
 #from models.model_nondeep256 import DCGAN_NONDEEP256 as DCGAN
@@ -62,6 +63,37 @@ beta1=0.5
 add_dir_prefix=''
 
 #--------------------------
+parser = argparse.ArgumentParser(description='DCGAN')
+parser.add_argument('--runmode', required=True, help='rum mode [first, again, generate], first=at the first time learning. again=start from checkpoint. generate=genrate picture from checkpoint', choices=['first','again','generate'])
+parser.add_argument('--log_dir', help='log directory')
+parser.add_argument('--ckpt_dir', help='checkpoint directory')
+parser.add_argument('--train_input_dir', help='input directory of learning picture for training')
+parser.add_argument('--output_dir', help='output directory of generated picture')
+parser.add_argument('--save_ckpt_num', type=int, help='save checkpoint interval(unit:epoch)')
+parser.add_argument('--ckpt_keep_num', type=int, help='checkpoint file max max_to_keep')
+parser.add_argument('--save_pic_num', type=int, help='generate picture interval(unit:epoch)')
+parser.add_argument('--epochs_num', type=int,help='number of times epoch')
+parser.add_argument('--batch_size', type=int, help='batch size to learn picture')
+
+args = parser.parse_args()
+if args.log_dir is not None:
+    log_dir = args.log_dir
+if args.ckpt_dir is not None:
+    ckpt_dir = args.ckpt_dir
+if args.train_input_dir is not None:
+    pic_dir = args.train_input_dir
+if args.output_dir is not None:
+    gen_pic_dir = args.output_dir
+if args.save_ckpt_num is not None:
+    ckpt_num = args.save_ckpt_num
+if args.ckpt_keep_num is not None:
+    max_to_keep = args.ckpt_keep_num
+if args.save_pic_num is not None:
+    save_pic_num = args.save_pic_num
+if args.epochs_num is not None:
+    EPOCHS = args.epochs_num
+if args.batch_size is not None:
+    BATCH_SIZE = args.batch_size
 
 log_dir = add_dir_prefix+log_dir
 log_prefix = os.path.join(log_dir, "sysetm-{}.log".format(timestamp()))
@@ -231,8 +263,8 @@ def CMDmessage():
     print('USAGE: --first :For Frist Learning. --again :For Start from checkpoint. --generate :For Generate Image from checkpoint.')
 
 def main(args):
-    if len(args) > 1:
-        if args[1] == '--again':
+    if args.runmode == 'again' or args.runmode == 'first' or args.runmode == 'generate':
+        if args.runmode == 'again':
             flag, counter = load(checkpoint_dir)
             if flag:
                 logging.info("# re-learning start")
@@ -245,7 +277,7 @@ def main(args):
             else:
                 logging.error("stop. reason:failed to load")
                 print("stop. reason:failed to load")
-        elif args[1] == '--first':
+        elif args.runmode == 'first':
             logging.info("# first learning start")
             print("# first learning start")
             try:
@@ -253,7 +285,7 @@ def main(args):
             except BaseException as e:
                 print(e)
                 logging.error(e)
-        elif args[1] == '--generate':
+        elif args.runmode == 'generate':
             flag, counter = load(checkpoint_dir)
             if flag:
                 logging.info("# re-learning start")
@@ -273,5 +305,5 @@ def main(args):
 
 if __name__ == '__main__':
     args = sys.argv
-    #args = ['','--first']
+    #args.runmode='first'
     main(args)
