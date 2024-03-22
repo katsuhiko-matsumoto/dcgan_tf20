@@ -18,8 +18,8 @@ import argparse
 
 #orig libs
 #from models.model_nondeep256 import DCGAN_NONDEEP256 as DCGAN
-from models.model_nondeep64 import DCGAN_NONDEEP64 as DCGAN
-#from models.model_deep64v2 import DCGAN_DEEP64v2 as DCGAN
+#from models.model_nondeep64 import DCGAN_NONDEEP64 as DCGAN
+from models.model_deep64v2 import DCGAN_DEEP64v2 as DCGAN
 #from models.model_deep256v2 import DCGAN_DEEP256V2 as DCGAN
 #from models.model_deep64v2 import DCGAN_DEEP64v2 as DCGAN
 from common.utils import *
@@ -106,16 +106,16 @@ input_fname_pattern = '*.jpg'
 data_path = os.path.join(data_dir, dataset_name, input_fname_pattern)
 data = glob(data_path)
 if len(data) == 0:
-  raise Exception("[!] No data found in '" + data_path + "'")
+    raise Exception("[!] No data found in '" + data_path + "'")
 
 dcgan = DCGAN()
 
 np.random.shuffle(data)
 imreadImg = imread(data[0])
 if len(imreadImg.shape) >= 3:
-  dcgan.set_cdim(imread(data[0]).shape[-1])
+    dcgan.set_cdim(imread(data[0]).shape[-1])
 else:
-  dcgan.set_cdim(1)
+    dcgan.set_cdim(1)
 
 dcgan.gen_gene_and_disc()
 generator = dcgan.get_generator()
@@ -166,11 +166,11 @@ seed = tf.random.normal([num_examples_to_generate, noise_dim])
 def train_step(images):
     noise = tf.random.normal([BATCH_SIZE, noise_dim])
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
-      generated_images = generator(noise, training=True)
-      real_output = discriminator(images, training=True)
-      fake_output = discriminator(generated_images, training=True)
-      gen_loss = generator_loss(fake_output)
-      disc_loss = discriminator_loss(real_output, fake_output)
+        generated_images = generator(noise, training=True)
+        real_output = discriminator(images, training=True)
+        fake_output = discriminator(generated_images, training=True)
+        gen_loss = generator_loss(fake_output)
+        disc_loss = discriminator_loss(real_output, fake_output)
 
     gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
     gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
@@ -181,20 +181,20 @@ def train_step(images):
     return gen_loss, disc_loss, real_output, fake_output
 
 def train(epochs):
-  for epoch in range(epochs):
-    start = time.time()
-    cnt = 0
-    np.random.shuffle(data)
-    BUFFER_SIZE = len(data)
-    if BUFFER_SIZE < BATCH_SIZE:
-      logging.error ("[!] Entire dataset size is less than the configured batch_size")
-      raise Exception("[!] Entire dataset size is less than the configured batch_size")
-    batch_idxs = BUFFER_SIZE // BATCH_SIZE
-    for idx in range (int(batch_idxs)):
-        batch_start = time.time()
-        sample_files = data[idx*BATCH_SIZE:(idx+1)*BATCH_SIZE]
-        sample = [
-            get_image(sample_file,
+    for epoch in range(epochs):
+        start = time.time()
+        cnt = 0
+        np.random.shuffle(data)
+        BUFFER_SIZE = len(data)
+        if BUFFER_SIZE < BATCH_SIZE:
+            logging.error ("[!] Entire dataset size is less than the configured batch_size")
+            raise Exception("[!] Entire dataset size is less than the configured batch_size")
+        batch_idxs = BUFFER_SIZE // BATCH_SIZE
+        for idx in range (int(batch_idxs)):
+            batch_start = time.time()
+            sample_files = data[idx*BATCH_SIZE:(idx+1)*BATCH_SIZE]
+            sample = [
+                get_image(sample_file,
                       input_height=dcgan.get_input_height(),
                       input_width=dcgan.get_input_width(),
                       resize_height=dcgan.get_output_height(),
@@ -202,43 +202,43 @@ def train(epochs):
                       crop=True,
                       grayscale=False) for sample_file in sample_files]
 
-        dataset = tf.data.Dataset.from_tensor_slices(sample).shuffle(BATCH_SIZE).batch(BATCH_SIZE)
-        for image_batch in dataset:
-          gen_loss, disc_loss, real_out, fake_out = train_step(image_batch)
-          logging.info('gen_loss:{}'.format(gen_loss.numpy()))
-          logging.info('disc_loss:{}'.format(disc_loss.numpy()))
-          #logging.info('real_output:{}'.format(real_out))
-          #logging.info('fake_output:{}'.format(fake_out))
-        print ('Batch Step(size:{}) :{}/{} in epoch {} is {} sec'.format(BATCH_SIZE, idx+1, batch_idxs, epoch+1, time.time()-batch_start))
-        logging.info ('Batch Step(size:{}) :{}/{} in epoch {} is {} sec'.format(BATCH_SIZE, idx+1, batch_idxs, epoch+1, time.time()-batch_start))
-    if (epoch + 1) % save_pic_num == 0:
-      generate_and_save_images(generator,
+            dataset = tf.data.Dataset.from_tensor_slices(sample).shuffle(BATCH_SIZE).batch(BATCH_SIZE)
+            for image_batch in dataset:
+                gen_loss, disc_loss, real_out, fake_out = train_step(image_batch)
+                logging.info('gen_loss:{}'.format(gen_loss.numpy()))
+                logging.info('disc_loss:{}'.format(disc_loss.numpy()))
+                #logging.info('real_output:{}'.format(real_out))
+                #logging.info('fake_output:{}'.format(fake_out))
+            print ('Batch Step(size:{}) :{}/{} in epoch {} is {} sec'.format(BATCH_SIZE, idx+1, batch_idxs, epoch+1, time.time()-batch_start))
+            logging.info ('Batch Step(size:{}) :{}/{} in epoch {} is {} sec'.format(BATCH_SIZE, idx+1, batch_idxs, epoch+1, time.time()-batch_start))
+        if (epoch + 1) % save_pic_num == 0:
+            generate_and_save_images(generator,
                              epoch + 1,
                              seed)
-    # Save the model
-    if (epoch + 1) % ckpt_num == 0:
-      logging.info('save checkpoint:{}'.format(checkpoint_prefix))
-      print('save checkpoint:{}'.format(checkpoint_prefix))
-      manager.save()
-      #checkpoint.save(file_prefix = checkpoint_prefix)
+        # Save the model
+        if (epoch + 1) % ckpt_num == 0:
+            logging.info('save checkpoint:{}'.format(checkpoint_prefix))
+            print('save checkpoint:{}'.format(checkpoint_prefix))
+            manager.save()
+            #checkpoint.save(file_prefix = checkpoint_prefix)
 
-    print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
-    logging.info ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
+        print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
+        logging.info ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
 
-  generate_and_save_images(generator,
+    generate_and_save_images(generator,
                            epochs,
                            seed)
 
 def generate_and_save_images(model, epoch, test_input):
-  # Notice `training` is set to False.
-  # This is so all layers run in inference mode (batchnorm).
-  predictions = model(test_input, training=False)
+    # Notice `training` is set to False.
+    # This is so all layers run in inference mode (batchnorm).
+    predictions = model(test_input, training=False)
 
-  data_path = os.path.join(add_dir_prefix+gen_pic_dir)
-  save_images(predictions, image_manifold_size(predictions.shape[0]),
+    data_path = os.path.join(add_dir_prefix+gen_pic_dir)
+    save_images(predictions, image_manifold_size(predictions.shape[0]),
         '{}/train_{:08d}_{}.png'.format(data_path, epoch, timestamp()))
-  logging.info("image saved!")
-  print("image saved!")
+    logging.info("image saved!")
+    print("image saved!")
 
 def load(checkpoint_dir):
     #import re
@@ -247,20 +247,17 @@ def load(checkpoint_dir):
     checkpoint_prefix_load = os.path.join(checkpoint_dir)
     ckpt = tf.train.get_checkpoint_state(checkpoint_prefix_load)
     if ckpt and ckpt.model_checkpoint_path:
-      ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
-      checkpoint.restore(tf.train.latest_checkpoint(checkpoint_prefix_load))
-      #counter = int(next(re.finditer("(\d+)(?!.*\d)",ckpt_name)).group(0))
-      counter = int(ckpt_name.split('-')[-1])
-      logging.info("******** [*] Success to read {}".format(ckpt_name))
-      print("******** [*] Success to read {}".format(ckpt_name))
-      return True, counter
+        ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
+        checkpoint.restore(tf.train.latest_checkpoint(checkpoint_prefix_load))
+        #counter = int(next(re.finditer("(\d+)(?!.*\d)",ckpt_name)).group(0))
+        counter = int(ckpt_name.split('-')[-1])
+        logging.info("******** [*] Success to read {}".format(ckpt_name))
+        print("******** [*] Success to read {}".format(ckpt_name))
+        return True, counter
     else:
-      logging.error(" [*] Failed to find a checkpoint")
-      print(" [*] Failed to find a checkpoint")
-      return False, 0
-
-def CMDmessage():
-    print('USAGE: --first :For Frist Learning. --again :For Start from checkpoint. --generate :For Generate Image from checkpoint.')
+        logging.error(" [*] Failed to find a checkpoint")
+        print(" [*] Failed to find a checkpoint")
+        return False, 0
 
 def main(args):
     if args.runmode == 'again' or args.runmode == 'first' or args.runmode == 'generate':
@@ -298,10 +295,6 @@ def main(args):
                 except BaseException as e:
                     print(e)
                     logging.error(e)
-        else:
-            CMDmessage()
-    else:
-        CMDmessage()
 
 if __name__ == '__main__':
     #args = sys.argv
