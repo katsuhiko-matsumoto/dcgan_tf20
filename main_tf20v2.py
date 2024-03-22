@@ -18,8 +18,8 @@ import argparse
 
 #orig libs
 #from models.model_nondeep256 import DCGAN_NONDEEP256 as DCGAN
-#from models.model_nondeep64 import DCGAN_NONDEEP64 as DCGAN
-from models.model_deep64v2 import DCGAN_DEEP64v2 as DCGAN
+from models.model_nondeep64 import DCGAN_NONDEEP64 as DCGAN
+#from models.model_deep64v2 import DCGAN_DEEP64v2 as DCGAN
 #from models.model_deep256v2 import DCGAN_DEEP256V2 as DCGAN
 #from models.model_deep64v2 import DCGAN_DEEP64v2 as DCGAN
 from common.utils import *
