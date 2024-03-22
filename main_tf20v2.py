@@ -304,6 +304,6 @@ def main(args):
         CMDmessage()
 
 if __name__ == '__main__':
-    args = sys.argv
+    #args = sys.argv
     #args.runmode='first'
     main(args)
