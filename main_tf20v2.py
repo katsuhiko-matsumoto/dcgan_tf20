@@ -95,18 +95,39 @@ if args.epochs_num is not None:
 if args.batch_size is not None:
     BATCH_SIZE = args.batch_size
 
+ERR_FLG = False
 log_dir = add_dir_prefix+log_dir
+if os.path.isdir(os.path.join(log_dir)) == False:
+    print("DIRECTORY is not found : {}".format(log_dir))
+    ERR_FLG = True
 log_prefix = os.path.join(log_dir, "sysetm-{}.log".format(timestamp()))
-logging.basicConfig(filename=log_prefix, level=log_level)
 
-data_dir = add_dir_prefix+pic_dir
 dataset_name = '256_celebA2020'
 input_fname_pattern = '*.jpg'
-
-data_path = os.path.join(data_dir, dataset_name, input_fname_pattern)
+_data_path = os.path.join(add_dir_prefix+pic_dir, dataset_name)
+data_path = os.path.join(add_dir_prefix+pic_dir, dataset_name, input_fname_pattern)
+if os.path.isdir(_data_path) == False:
+    print("DIRECTORY is not found : {}".format(_data_path))
+    ERR_FLG = True
 data = glob(data_path)
 if len(data) == 0:
-    raise Exception("[!] No data found in '" + data_path + "'")
+    print("[!] No data found in '" + data_path + "'")
+    ERR_FLG = True
+
+checkpoint_prefix = os.path.join(add_dir_prefix+ckpt_dir)
+if os.path.isdir(checkpoint_prefix) == False:
+    print("DIRECTORY is not found : {}".format(checkpoint_prefix))
+    ERR_FLG = True
+
+gen_pic_dir = os.path.join(add_dir_prefix+gen_pic_dir)
+if os.path.isdir(gen_pic_dir) == False:
+    print("DIRECTORY is not found : {}".format(gen_pic_dir))
+    ERR_FLG = True
+
+if ERR_FLG == True:
+    print("please make directories. [program exit]")
+    sys.exit()
+logging.basicConfig(filename=log_prefix, level=log_level)
 
 dcgan = DCGAN()
 
@@ -151,9 +172,7 @@ discriminator_optimizer = tf.keras.optimizers.Adam(learning_rate, beta1)
 #generator_optimizer = tf.keras.optimizers.Adam(1e-4)
 #discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 #save checkpoint
-checkpoint_dir = add_dir_prefix+ckpt_dir
-#checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
-checkpoint_prefix = os.path.join(checkpoint_dir)
+
 checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  discriminator_optimizer=discriminator_optimizer,
                                  generator=generator,
@@ -233,10 +252,8 @@ def generate_and_save_images(model, epoch, test_input):
     # Notice `training` is set to False.
     # This is so all layers run in inference mode (batchnorm).
     predictions = model(test_input, training=False)
-
-    data_path = os.path.join(add_dir_prefix+gen_pic_dir)
     save_images(predictions, image_manifold_size(predictions.shape[0]),
-        '{}/train_{:08d}_{}.png'.format(data_path, epoch, timestamp()))
+        '{}/train_{:08d}_{}.png'.format(gen_pic_dir, epoch, timestamp()))
     logging.info("image saved!")
     print("image saved!")
 
@@ -283,7 +300,7 @@ def main(args):
                 print(e)
                 logging.error(e)
         elif args.runmode == 'generate':
-            flag, counter = load(checkpoint_dir)
+            flag, counter = load(checkpoint_prefix)
             if flag:
                 logging.info("# re-learning start")
                 print("# image-generate start")
