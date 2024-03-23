@@ -98,7 +98,7 @@ if args.batch_size is not None:
 ERR_FLG = False
 log_dir = add_dir_prefix+log_dir
 if os.path.isdir(os.path.join(log_dir)) == False:
-    print("DIRECTORY is not found : {}".format(log_dir))
+    print("ERROR:DIRECTORY is not found : {}".format(log_dir))
     ERR_FLG = True
 log_prefix = os.path.join(log_dir, "sysetm-{}.log".format(timestamp()))
 
@@ -107,25 +107,25 @@ input_fname_pattern = '*.jpg'
 _data_path = os.path.join(add_dir_prefix+pic_dir, dataset_name)
 data_path = os.path.join(add_dir_prefix+pic_dir, dataset_name, input_fname_pattern)
 if os.path.isdir(_data_path) == False:
-    print("DIRECTORY is not found : {}".format(_data_path))
+    print("ERROR:DIRECTORY is not found : {}".format(_data_path))
     ERR_FLG = True
 data = glob(data_path)
 if len(data) == 0:
-    print("[!] No data found in '" + data_path + "'")
+    print("ERROR:[!] No data found in '" + data_path + "'")
     ERR_FLG = True
 
 checkpoint_prefix = os.path.join(add_dir_prefix+ckpt_dir)
 if os.path.isdir(checkpoint_prefix) == False:
-    print("DIRECTORY is not found : {}".format(checkpoint_prefix))
+    print("ERROR:DIRECTORY is not found : {}".format(checkpoint_prefix))
     ERR_FLG = True
 
 gen_pic_dir = os.path.join(add_dir_prefix+gen_pic_dir)
 if os.path.isdir(gen_pic_dir) == False:
-    print("DIRECTORY is not found : {}".format(gen_pic_dir))
+    print("ERROR:DIRECTORY is not found : {}".format(gen_pic_dir))
     ERR_FLG = True
 
 if ERR_FLG == True:
-    print("please make directories. [program exit]")
+    print("please fix error. [program exit]")
     sys.exit()
 logging.basicConfig(filename=log_prefix, level=log_level)
 
