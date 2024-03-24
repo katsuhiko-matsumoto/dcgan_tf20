@@ -228,7 +228,7 @@ def train(epochs):
                 logging.info('disc_loss:{}'.format(disc_loss.numpy()))
                 #logging.info('real_output:{}'.format(real_out))
                 #logging.info('fake_output:{}'.format(fake_out))
-            print ('Batch Step(size:{}) :{}/{} in epoch {} is {} sec'.format(BATCH_SIZE, idx+1, batch_idxs, epoch+1, time.time()-batch_start))
+            #print ('Batch Step(size:{}) :{}/{} in epoch {} is {} sec'.format(BATCH_SIZE, idx+1, batch_idxs, epoch+1, time.time()-batch_start))
             logging.info ('Batch Step(size:{}) :{}/{} in epoch {} is {} sec'.format(BATCH_SIZE, idx+1, batch_idxs, epoch+1, time.time()-batch_start))
         if (epoch + 1) % save_pic_num == 0:
             generate_and_save_images(generator,
@@ -237,11 +237,11 @@ def train(epochs):
         # Save the model
         if (epoch + 1) % ckpt_num == 0:
             logging.info('save checkpoint:{}'.format(checkpoint_prefix))
-            print('save checkpoint:{}'.format(checkpoint_prefix))
+            #print('save checkpoint:{}'.format(checkpoint_prefix))
             manager.save()
             #checkpoint.save(file_prefix = checkpoint_prefix)
 
-        print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
+        #print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
         logging.info ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
 
     generate_and_save_images(generator,
@@ -255,7 +255,7 @@ def generate_and_save_images(model, epoch, test_input):
     save_images(predictions, image_manifold_size(predictions.shape[0]),
         '{}/train_{:08d}_{}.png'.format(gen_pic_dir, epoch, timestamp()))
     logging.info("image saved!")
-    print("image saved!")
+    #print("image saved!")
 
 def load(checkpoint_dir):
     #import re
