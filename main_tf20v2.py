@@ -126,6 +126,7 @@ if os.path.isdir(gen_pic_dir) == False:
 
 if ERR_FLG == True:
     print("please fix error. [program exit]")
+    #sys.stdout.write(str(1))
     sys.exit()
 logging.basicConfig(filename=log_prefix, level=log_level)
 
@@ -279,7 +280,7 @@ def load(checkpoint_dir):
 def main(args):
     if args.runmode == 'again' or args.runmode == 'first' or args.runmode == 'generate':
         if args.runmode == 'again':
-            flag, counter = load(checkpoint_dir)
+            flag, counter = load(checkpoint_prefix)
             if flag:
                 logging.info("# re-learning start")
                 print("# re-learning start")
