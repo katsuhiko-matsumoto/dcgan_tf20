@@ -31,7 +31,7 @@ log_level = logging.INFO
 #log directory
 log_dir = 'logs'
 #input directory of learning picture
-pic_dir = 'data'
+pic_dir = 'data/256_celebA2020'
 #checkpoint directory
 ckpt_dir = 'training_checkpoints'
 #output directory of generated picture
@@ -102,10 +102,9 @@ if os.path.isdir(os.path.join(log_dir)) == False:
     ERR_FLG = True
 log_prefix = os.path.join(log_dir, "sysetm-{}.log".format(timestamp()))
 
-dataset_name = '256_celebA2020'
 input_fname_pattern = '*.jpg'
-_data_path = os.path.join(add_dir_prefix+pic_dir, dataset_name)
-data_path = os.path.join(add_dir_prefix+pic_dir, dataset_name, input_fname_pattern)
+_data_path = os.path.join(add_dir_prefix+pic_dir)
+data_path = os.path.join(add_dir_prefix+pic_dir, input_fname_pattern)
 if os.path.isdir(_data_path) == False:
     print("ERROR:DIRECTORY is not found : {}".format(_data_path))
     ERR_FLG = True
