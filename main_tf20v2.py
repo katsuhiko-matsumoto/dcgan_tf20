@@ -38,11 +38,11 @@ ckpt_dir = 'training_checkpoints'
 gen_pic_dir = 'out'
 
 #save checkpoint interval(unit:epoch)
-ckpt_num = 100
+ckpt_num = 1
 #checkpoint file max max_to_keep
 max_to_keep=2
 #generate picture interval(unit:epoch)
-save_pic_num = 100
+save_pic_num = 1
 #number of sample generated images included in one image
 num_examples_to_generate = 64
 
@@ -98,9 +98,9 @@ if args.batch_size is not None:
 ERR_FLG = False
 log_dir = add_dir_prefix+log_dir
 if os.path.isdir(os.path.join(log_dir)) == False:
-    print("ERROR:DIRECTORY is not found : {}".format(log_dir))
-    ERR_FLG = True
-log_prefix = os.path.join(log_dir, "sysetm-{}.log".format(timestamp()))
+    os.makedirs(os.path.join(log_dir))
+log_prefix = os.path.join(log_dir, "system-{}.log".format(timestamp()))
+logging.basicConfig(filename=log_prefix, level=log_level)
 
 input_fname_pattern = '*.jpg'
 _data_path = os.path.join(add_dir_prefix+pic_dir)
@@ -115,19 +115,16 @@ if len(data) == 0:
 
 checkpoint_prefix = os.path.join(add_dir_prefix+ckpt_dir)
 if os.path.isdir(checkpoint_prefix) == False:
-    print("ERROR:DIRECTORY is not found : {}".format(checkpoint_prefix))
-    ERR_FLG = True
+    os.makedirs(checkpoint_prefix)
 
 gen_pic_dir = os.path.join(add_dir_prefix+gen_pic_dir)
 if os.path.isdir(gen_pic_dir) == False:
-    print("ERROR:DIRECTORY is not found : {}".format(gen_pic_dir))
-    ERR_FLG = True
+    os.makedirs(gen_pic_dir)
 
 if ERR_FLG == True:
     print("please fix error. [program exit]")
     #sys.stdout.write(str(1))
     sys.exit()
-logging.basicConfig(filename=log_prefix, level=log_level)
 
 dcgan = DCGAN()
 
