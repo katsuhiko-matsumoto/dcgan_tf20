@@ -215,8 +215,7 @@ def train(epochs):
                       input_width=dcgan.get_input_width(),
                       resize_height=dcgan.get_output_height(),
                       resize_width=dcgan.get_output_width(),
-                      crop=True,
-                      grayscale=False) for sample_file in sample_files]
+                      crop=True) for sample_file in sample_files]
 
             dataset = tf.data.Dataset.from_tensor_slices(sample).shuffle(BATCH_SIZE).batch(BATCH_SIZE)
             for image_batch in dataset:

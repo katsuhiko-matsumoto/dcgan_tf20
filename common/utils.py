@@ -20,23 +20,16 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #SOFTWARE.
 
-import imageio
 import numpy as np
-import PIL
 import time
 import cv2
-import scipy.misc
 from skimage.transform import resize
-from PIL import Image
 import imageio
 import datetime
 
 #---util---------
 
 def imread(path, grayscale = False):
-  if (grayscale):
-    return scipy.misc.imread(path, flatten = True).astype(np.float64)
-  else:
     # Reference: https://github.com/carpedm20/DCGAN-tensorflow/issues/162#issuecomment-315519747
     img_bgr = cv2.imread(path)
     # Reference: https://stackoverflow.com/a/15074748/
@@ -45,8 +38,8 @@ def imread(path, grayscale = False):
 
 def get_image(image_path, input_height, input_width,
               resize_height=64, resize_width=64,
-              crop=True, grayscale=False):
-  image = imread(image_path, grayscale)
+              crop=True):
+  image = imread(image_path)
   return transform(image, input_height, input_width,
                    resize_height, resize_width, crop)
 
@@ -78,7 +71,6 @@ def gen_random(mode, size):
     if mode=='uniform_unsigned': return np.random.uniform(0,1,size=size)
 
 def save_images(images, size, image_path):
-  print('size:',size)
   return imsave(inverse_transform(images), size, image_path)
 
 def imsave(images, size, path):
