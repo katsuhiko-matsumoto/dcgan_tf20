@@ -1,16 +1,8 @@
 import tensorflow as tf
-import imageio
 import numpy as np
 import os
-import PIL
-from tensorflow.keras import layers
 import time
 from glob import glob
-import cv2
-import scipy.misc
-from skimage.transform import resize
-from PIL import Image
-import imageio
 import logging
 import datetime
 import sys
