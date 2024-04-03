@@ -275,7 +275,7 @@ def main(args):
                     train(EPOCHS)
                 except BaseException as e:
                     print(e)
-                    logging.error(e)
+                    logging.error(e, stack_info=True)
             else:
                 logging.error("stop. reason:failed to load")
                 print("stop. reason:failed to load")
@@ -286,7 +286,7 @@ def main(args):
                 train(EPOCHS)
             except BaseException as e:
                 print(e)
-                logging.error(e)
+                logging.error(e, stack_info=True)
         elif args.runmode == 'generate':
             flag, counter = load(checkpoint_prefix)
             if flag:
@@ -299,7 +299,7 @@ def main(args):
                                              seed)
                 except BaseException as e:
                     print(e)
-                    logging.error(e)
+                    logging.error(e, stack_info=True)
 
 if __name__ == '__main__':
     #args = sys.argv
